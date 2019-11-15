@@ -1,0 +1,5 @@
+*/.ipynb_checkpoints/*
+/lambda_func/*
+/config.ini
+/.config*
+/*.ipynb
