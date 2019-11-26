@@ -7,23 +7,24 @@ import slackweb
 import datetime
 import pickle
 import configparser
+import os
 
 ini = configparser.SafeConfigParser()
 ini.read("./config.ini")
- 
-s3 = boto3.resource('s3') 
- 
+
+s3 = boto3.resource('s3')
+
 def lambda_handler(event, context):
     bucket = 'maaya-fc-top'
-    key = 'new_atcl.txt' 
+    key = 'new_atcl.txt'
     file_path = '/tmp/new_atcl.txt'
     try:
-        bucket = s3.Bucket(bucket) 
+        bucket = s3.Bucket(bucket)
         bucket.download_file(key, file_path)
         print('download_ok')
     except Exception as e:
         print(e)
-        
+
     # メールアドレスとパスワードの指定
     USER = ini.get("maaya_fc", "username")
     PASS = ini.get("maaya_fc", "password")
@@ -49,8 +50,6 @@ def lambda_handler(event, context):
     url = [tag['href'] for tag in soup('a', class_="home-news__link")]
     newest_list = columns[0:3],url[0:3]
 
-
-
     newatcl_cnt = 0
     f = open(file_path, "rb")
     newest_list_stock = pickle.load(f)
@@ -63,6 +62,7 @@ def lambda_handler(event, context):
     if newatcl_cnt > 0:
         f = open(file_path, 'wb')
         pickle.dump(newest_list, f)
+        f = open(file_path, "rb")
         bucket.upload_file(file_path, key)
 
     if newatcl_cnt == 0:
@@ -73,4 +73,5 @@ def lambda_handler(event, context):
         for newatcl_num in range(newatcl_cnt):
             slack.notify(text = newest_list[0][newatcl_num])
             slack.notify(text = newest_list[1][newatcl_num])
-
+            print(newest_list[0][newatcl_num])
+            print(newest_list[1][newatcl_num])
