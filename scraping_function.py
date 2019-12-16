@@ -53,6 +53,7 @@ def lambda_handler(event, context):
     newatcl_cnt = 0
     f = open(file_path, "rb")
     newest_list_stock = pickle.load(f)
+    f.close()
 
     for atcl_num in range(len(newest_list[0])):
         if newest_list[0][atcl_num] == newest_list_stock[0][0]:
@@ -62,7 +63,7 @@ def lambda_handler(event, context):
     if newatcl_cnt > 0:
         f = open(file_path, 'wb')
         pickle.dump(newest_list, f)
-        f = open(file_path, "rb")
+        f.close()
         bucket.upload_file(file_path, key)
 
     if newatcl_cnt == 0:
