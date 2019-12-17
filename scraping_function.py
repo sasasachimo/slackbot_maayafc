@@ -53,6 +53,7 @@ def lambda_handler(event, context):
     newatcl_cnt = 0
     f = open(file_path, "rb")
     newest_list_stock = pickle.load(f)
+    f.close()
 
     for atcl_num in range(len(newest_list[0])):
         if newest_list[0][atcl_num] == newest_list_stock[0][0]:
@@ -62,7 +63,7 @@ def lambda_handler(event, context):
     if newatcl_cnt > 0:
         f = open(file_path, 'wb')
         pickle.dump(newest_list, f)
-        f = open(file_path, "rb")
+        f.close()
         bucket.upload_file(file_path, key)
 
     if newatcl_cnt == 0:
@@ -70,8 +71,11 @@ def lambda_handler(event, context):
         print("更新なし")
     else:
         slack = slackweb.Slack(url=ini.get("maaya_fc", "slackurl"))
-        for newatcl_num in range(newatcl_cnt):
-            slack.notify(text = newest_list[0][newatcl_num])
-            slack.notify(text = newest_list[1][newatcl_num])
-            print(newest_list[0][newatcl_num])
-            print(newest_list[1][newatcl_num])
+        
+    for newatcl_num in range(newatcl_cnt):
+        if newest_list[1][newatcl_num] not in 'https://maaya-fc.jp/':
+	        newest_list[1][newatcl_num] = 'https://maaya-fc.jp/' + newest_list[1][newatcl_num]
+        slack.notify(text = newest_list[0][newatcl_num])
+        slack.notify(text = newest_list[1][newatcl_num])
+        print(newest_list[0][newatcl_num])
+        print(newest_list[1][newatcl_num])
