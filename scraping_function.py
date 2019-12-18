@@ -75,7 +75,5 @@ def lambda_handler(event, context):
     for newatcl_num in range(newatcl_cnt):
         if newest_list[1][newatcl_num] not in 'https://maaya-fc.jp/':
 	        newest_list[1][newatcl_num] = 'https://maaya-fc.jp/' + newest_list[1][newatcl_num]
-        slack.notify(text = newest_list[0][newatcl_num])
-        slack.notify(text = newest_list[1][newatcl_num])
-        print(newest_list[0][newatcl_num])
-        print(newest_list[1][newatcl_num])
+        slack.notify(text = newest_list[0][newatcl_num] + ':' + newest_list[1][newatcl_num])
+        print(newest_list[0][newatcl_num] + ':' + newest_list[1][newatcl_num])
